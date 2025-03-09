@@ -5,7 +5,7 @@ import 'tfs_base_controller.dart';
 import 'tfs_state.dart';
 
 abstract class TFSAutoBinderView<C extends TFSBaseController, S extends TFSState> extends GetView<C> {
-  TFSAutoBinderView({super.key, Binding? binding}) {
+  TFSAutoBinderView({super.key, Bindings? binding}) {
     binding?.dependencies();
   }
 
@@ -13,7 +13,7 @@ abstract class TFSAutoBinderView<C extends TFSBaseController, S extends TFSState
 }
 
 abstract class TFSFullView extends StatefulWidget {
-  TFSFullView({super.key, Binding? binding}) {
+  TFSFullView({super.key, Bindings? binding}) {
     binding?.dependencies();
   }
 }

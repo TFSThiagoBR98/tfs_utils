@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:startate/get_rx/src/rx_types/rx_types.dart';
 
+import 'tfs_auto_binder_view.dart';
 import 'tfs_state.dart';
 
 abstract class TFSAppState extends TFSState {
@@ -33,6 +34,12 @@ abstract class TFSAppState extends TFSState {
   final RestorableRx<Brightness> _themeBrightness = Brightness.light.robs;
   Brightness get themeBrightness => _themeBrightness.value.value;
   set themeBrightness(Brightness value) => _themeBrightness.value.value = value;
+
+  @override
+  @mustCallSuper
+  void restoreState(TFSFullViewState stateWidget, RestorationBucket? oldBucket, bool initialRestore) {
+    stateWidget.registerRestore(_themeBrightness, 'settings.themeBrightness');
+  }
 
   @override
   void dispose() {
