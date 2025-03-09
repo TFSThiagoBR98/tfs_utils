@@ -31,6 +31,10 @@ abstract class TFSFullViewState<L extends StatefulWidget, T extends TFSBaseContr
     state.restoreState(this, oldBucket, initialRestore);
   }
 
+  void registerRestore(RestorableProperty<Object?> property, String restorationId) {
+    registerForRestoration(property, restorationId);
+  }
+
   @override
   void dispose() {
     super.dispose();
