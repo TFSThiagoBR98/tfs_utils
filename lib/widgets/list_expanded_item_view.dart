@@ -35,7 +35,7 @@ class ListExpandedItemView extends StatelessWidget {
           ? const SizedBox.shrink()
           : SizedBox(
               width: 125,
-              child: ButtonBar(
+              child: OverflowBar(
                 children: [
                   IconButton(
                       padding: const EdgeInsets.symmetric(horizontal: 8),

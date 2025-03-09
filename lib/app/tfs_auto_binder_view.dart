@@ -1,23 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:startate/startate.dart';
 
-abstract class TFSAutoBinderView<C> extends GetView<C> {
-  TFSAutoBinderView({super.key, Bindings? binding}) {
+import 'tfs_base_controller.dart';
+import 'tfs_state.dart';
+
+abstract class TFSAutoBinderView<C extends TFSBaseController, S extends TFSState> extends GetView<C> {
+  TFSAutoBinderView({super.key, Binding? binding}) {
+    binding?.dependencies();
+  }
+
+  S get state => controller.state as S;
+}
+
+abstract class TFSFullView extends StatefulWidget {
+  TFSFullView({super.key, Binding? binding}) {
     binding?.dependencies();
   }
 }
 
-abstract class TFSFullView<T extends GetxController> extends StatefulWidget {
-  TFSFullView({super.key, Bindings? binding}) {
-    binding?.dependencies();
-  }
-}
-
-abstract class GetFullViewState<L extends StatefulWidget,
-    T extends GetxController> extends State<L> {
+abstract class TFSFullViewState<L extends StatefulWidget, T extends TFSBaseController, S extends TFSState>
+    extends State<L> with RestorationMixin {
   final String? tag = null;
 
-  T get controller => GetInstance().find<T>(tag: tag);
+  T get controller => Get.find<T>(tag: tag);
+
+  S get state => controller.state as S;
+
+  @override
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
+    state.restoreState(this, oldBucket, initialRestore);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    state.dispose();
+  }
 
   @override
   Widget build(BuildContext context);

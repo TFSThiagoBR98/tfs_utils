@@ -62,16 +62,15 @@ class SelectorDropdownFormfield<T> extends StatelessWidget {
           popupProps: const PopupProps.menu(
             showSelectedItems: true,
           ),
-          items: items,
+          items: (f, cs) => items,
           dropdownBuilder: ((context, selectedItem) {
-            return Text(selectedItem?.label ?? '',
-                style: Theme.of(context).textTheme.titleMedium);
+            return Text(selectedItem?.label ?? '', style: Theme.of(context).textTheme.titleMedium);
           }),
           itemAsString: (item) => item.label,
           compareFn: (item1, item2) => item1.id == item2.id,
-          dropdownDecoratorProps: DropDownDecoratorProps(
+          decoratorProps: DropDownDecoratorProps(
             baseStyle: style,
-            dropdownSearchDecoration: InputDecoration(
+            decoration: InputDecoration(
                 suffixIcon: suffixIcon,
                 border: border,
                 isDense: isDense,

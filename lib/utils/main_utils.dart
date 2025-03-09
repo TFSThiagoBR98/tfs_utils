@@ -18,8 +18,7 @@ Future<void> initFlutterApp() async {
   });
 }
 
-final appRouteKey =
-    GlobalKey<NavigatorState>(debugLabel: 'Key Created by default');
+final appRouteKey = GlobalKey<NavigatorState>(debugLabel: 'Key Created by default');
 
 final NumberFormat lformatMoney = NumberFormat.currency(
   locale: 'pt_BR',
@@ -79,9 +78,7 @@ Future<XFile?> selectImagePicker(BuildContext context) async {
                         style: TextStyle(fontSize: 20.0),
                       ),
                       onPressed: () async {
-                        picker
-                            .pickImage(source: ImageSource.camera)
-                            .then((file) => Navigator.of(context).pop(file));
+                        picker.pickImage(source: ImageSource.camera).then((file) => Navigator.of(context).pop(file));
                       },
                     ),
                   ),
@@ -93,9 +90,7 @@ Future<XFile?> selectImagePicker(BuildContext context) async {
                         style: TextStyle(fontSize: 20.0),
                       ),
                       onPressed: () {
-                        picker
-                            .pickImage(source: ImageSource.gallery)
-                            .then((file) => Navigator.of(context).pop(file));
+                        picker.pickImage(source: ImageSource.gallery).then((file) => Navigator.of(context).pop(file));
                       },
                     ),
                   ),

@@ -1,6 +1,6 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:startate/startate.dart';
 
 import '../utils/main_utils.dart';
 

@@ -29,6 +29,7 @@ class InputFormfield extends StatelessWidget {
   final String? helperText;
   final String? hintText;
   final TextCapitalization textCapitalization;
+  final String? restorationId;
 
   const InputFormfield(
       {super.key,
@@ -58,7 +59,8 @@ class InputFormfield extends StatelessWidget {
       this.helperText,
       this.hintText,
       this.textCapitalization = TextCapitalization.none,
-      this.onTap});
+      this.onTap,
+      this.restorationId});
 
   @override
   Widget build(BuildContext context) {
@@ -78,6 +80,7 @@ class InputFormfield extends StatelessWidget {
           minLines: lines,
           readOnly: readOnly,
           maxLines: lines,
+          restorationId: restorationId,
           textCapitalization: textCapitalization,
           style: style,
           decoration: InputDecoration(

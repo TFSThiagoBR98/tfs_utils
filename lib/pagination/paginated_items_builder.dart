@@ -50,9 +50,8 @@ class PaginatedItemsBuilder<T> extends StatefulWidget {
     this.scrollDirection = Axis.vertical,
     this.scrollPhysics,
     bool? scrollPrimary,
-  }) : scrollPrimary = scrollPrimary ??
-            scrollController == null &&
-                identical(scrollDirection, Axis.vertical);
+    this.restorationId,
+  }) : scrollPrimary = scrollPrimary ?? scrollController == null && identical(scrollDirection, Axis.vertical);
 
   /// This is the controller function that should handle fetching the list
   /// and updating in the state.
@@ -221,6 +220,8 @@ class PaginatedItemsBuilder<T> extends StatefulWidget {
   final double? gridCrossAxisSpacing;
   final double? gridChildAspectRatio;
 
+  final String? restorationId;
+
   /// A delegate that controls the layout of the children within the [GridView].
   ///
   /// The [GridView], [GridView.builder], and [GridView.custom] constructors let you specify this
@@ -229,37 +230,33 @@ class PaginatedItemsBuilder<T> extends StatefulWidget {
   final SliverGridDelegate? gridDelegate;
 
   @override
-  State<PaginatedItemsBuilder<T>> createState() =>
-      _PaginatedItemsBuilderState<T>();
+  State<PaginatedItemsBuilder<T>> createState() => _PaginatedItemsBuilderState<T>();
 }
 
-class _PaginatedItemsBuilderState<T> extends State<PaginatedItemsBuilder<T>> {
+class _PaginatedItemsBuilderState<T> extends State<PaginatedItemsBuilder<T>> with RestorationMixin {
   ScrollController? _scrollController;
 
-  bool _initialLoading = true;
-  bool _loadingMoreData = false;
+  final RestorableBool _initialLoading = RestorableBool(true);
+  final RestorableBool _loadingMoreData = RestorableBool(false);
 
   final _loaderKey = UniqueKey();
 
-  late bool showLoader;
+  final RestorableBool showLoader = RestorableBool(false);
   late ScrollController? itemsScrollController;
   late ScrollPhysics? scrollPhysics;
-  late int itemCount;
+  final RestorableInt itemCount = RestorableInt(0);
   late T? mockItem;
 
   Future<void> fetchData({bool reset = false}) async {
     if (!mounted) return;
-    if (!reset &&
-        (widget.response != null &&
-            !widget.response!.hasMoreData &&
-            !_loadingMoreData)) return;
+    if (!reset && (widget.response != null && !widget.response!.hasMoreData && !_loadingMoreData.value)) return;
     setState(() {
-      if (_initialLoading) {
-        _initialLoading = false;
+      if (_initialLoading.value) {
+        _initialLoading.value = false;
       } else if (reset) {
-        _initialLoading = true;
+        _initialLoading.value = true;
       } else {
-        _loadingMoreData = true;
+        _loadingMoreData.value = true;
       }
     });
 
@@ -267,8 +264,8 @@ class _PaginatedItemsBuilderState<T> extends State<PaginatedItemsBuilder<T>> {
       await widget.fetchPageData(reset);
     } catch (_) {}
 
-    if (_initialLoading) _initialLoading = false;
-    if (_loadingMoreData) _loadingMoreData = false;
+    if (_initialLoading.value) _initialLoading.value = false;
+    if (_loadingMoreData.value) _loadingMoreData.value = false;
     try {
       setState(() {});
     } catch (_) {}
@@ -287,8 +284,7 @@ class _PaginatedItemsBuilderState<T> extends State<PaginatedItemsBuilder<T>> {
   Widget _loaderBuilder() {
     Widget buildLoader() => mockItem != null
         ? Shimmer.fromColors(
-            highlightColor:
-                PaginatedItemsBuilder.config!.shimmerConfig.highlightColor,
+            highlightColor: PaginatedItemsBuilder.config!.shimmerConfig.highlightColor,
             baseColor: PaginatedItemsBuilder.config!.shimmerConfig.baseColor,
             period: PaginatedItemsBuilder.config!.shimmerConfig.period,
             child: IgnorePointer(
@@ -334,8 +330,7 @@ class _PaginatedItemsBuilderState<T> extends State<PaginatedItemsBuilder<T>> {
 
   @override
   void initState() {
-    _scrollController = widget.scrollController ??
-        (widget.scrollPrimary == true ? null : ScrollController());
+    _scrollController = widget.scrollController ?? (widget.scrollPrimary == true ? null : ScrollController());
 
     mockItem = PaginatedItemsBuilder.config?.mockItemGetter<T>();
 
@@ -347,8 +342,7 @@ class _PaginatedItemsBuilderState<T> extends State<PaginatedItemsBuilder<T>> {
     // });
     // }
 
-    PaginatedItemsBuilder.config ??=
-        PaginatedItemsBuilderConfig.defaultConfig();
+    PaginatedItemsBuilder.config ??= PaginatedItemsBuilderConfig.defaultConfig();
 
     super.initState();
   }
@@ -356,14 +350,14 @@ class _PaginatedItemsBuilderState<T> extends State<PaginatedItemsBuilder<T>> {
   @override
   void dispose() {
     if (widget.scrollController == null) _scrollController?.dispose();
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    showLoader = (widget.paginate && (widget.response?.hasMoreData ?? false));
-    itemsScrollController =
-        widget.scrollController == null ? _scrollController : null;
+    showLoader.value = (widget.paginate && (widget.response?.hasMoreData ?? false));
+    itemsScrollController = widget.scrollController == null ? _scrollController : null;
     scrollPhysics = widget.scrollPhysics ??
         (widget.scrollPrimary == true ||
                 (widget.scrollPrimary == null &&
@@ -372,19 +366,13 @@ class _PaginatedItemsBuilderState<T> extends State<PaginatedItemsBuilder<T>> {
             ? const AlwaysScrollableScrollPhysics()
             : null);
 
-    if (widget.shrinkWrap &&
-        widget.neverScrollablePhysicsOnShrinkWrap &&
-        widget.scrollPhysics == null) {
+    if (widget.shrinkWrap && widget.neverScrollablePhysicsOnShrinkWrap && widget.scrollPhysics == null) {
       scrollPhysics = const NeverScrollableScrollPhysics();
     }
 
     (() {
-      final itemsLen =
-          (widget.response?.items?.length ?? widget.loaderItemsCount) +
-              (showLoader ? 1 : 0);
-      itemCount = widget.maxLength == null
-          ? itemsLen
-          : min(itemsLen, widget.maxLength!);
+      final itemsLen = (widget.response?.items?.length ?? widget.loaderItemsCount) + (showLoader.value ? 1 : 0);
+      itemCount.value = widget.maxLength == null ? itemsLen : min(itemsLen, widget.maxLength!);
     })();
 
     if (widget.response?.items?.isEmpty ?? false) {
@@ -402,9 +390,7 @@ class _PaginatedItemsBuilderState<T> extends State<PaginatedItemsBuilder<T>> {
     }
   }
 
-  Widget _buildItems() => widget.itemsDisplayType == ItemsDisplayType.list
-      ? _buildListView()
-      : _buildGridView();
+  Widget _buildItems() => widget.itemsDisplayType == ItemsDisplayType.list ? _buildListView() : _buildGridView();
 
   ListView _buildListView() {
     return ListView.separated(
@@ -416,13 +402,14 @@ class _PaginatedItemsBuilderState<T> extends State<PaginatedItemsBuilder<T>> {
       scrollDirection: widget.scrollDirection,
       itemBuilder: _itemBuilder,
       padding: widget.padding,
+      restorationId: restorationId != null ? '$restorationId.list' : null,
       separatorBuilder: (_, __) =>
           widget.separatorWidget ??
           SizedBox(
             width: widget.listItemsGap,
             height: widget.listItemsGap,
           ),
-      itemCount: itemCount,
+      itemCount: itemCount.value,
     );
   }
 
@@ -434,6 +421,7 @@ class _PaginatedItemsBuilderState<T> extends State<PaginatedItemsBuilder<T>> {
       reverse: widget.reverse,
       scrollDirection: widget.scrollDirection,
       itemBuilder: _itemBuilder,
+      restorationId: restorationId != null ? '$restorationId.grid' : null,
       gridDelegate: widget.gridDelegate ??
           SliverGridDelegateWithFixedCrossAxisCount(
             childAspectRatio: widget.gridChildAspectRatio ?? 1,
@@ -442,7 +430,18 @@ class _PaginatedItemsBuilderState<T> extends State<PaginatedItemsBuilder<T>> {
             crossAxisSpacing: widget.gridCrossAxisSpacing ?? 15,
           ),
       padding: widget.padding,
-      itemCount: itemCount,
+      itemCount: itemCount.value,
     );
+  }
+
+  @override
+  String? get restorationId => widget.restorationId;
+
+  @override
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
+    registerForRestoration(_initialLoading, '$restorationId._initialLoading');
+    registerForRestoration(_loadingMoreData, '$restorationId._loadingMoreData');
+    registerForRestoration(showLoader, '$restorationId.showLoader');
+    registerForRestoration(itemCount, '$restorationId.itemCount');
   }
 }

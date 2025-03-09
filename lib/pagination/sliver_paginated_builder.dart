@@ -33,6 +33,7 @@ class SliverPaginatedItemsBuilder<T> extends StatefulWidget {
     this.gridCrossAxisSpacing,
     this.gridChildAspectRatio,
     this.gridDelegate,
+    this.restorationId,
   }) : config = config ?? PaginatedItemsBuilderConfig.defaultConfig();
 
   /// This is the controller function that should handle fetching the list
@@ -100,36 +101,33 @@ class SliverPaginatedItemsBuilder<T> extends StatefulWidget {
   /// implicitly.
   final SliverGridDelegate? gridDelegate;
 
+  final String? restorationId;
+
   @override
-  State<SliverPaginatedItemsBuilder<T>> createState() =>
-      _SliverPaginatedItemsBuilderState<T>();
+  State<SliverPaginatedItemsBuilder<T>> createState() => _SliverPaginatedItemsBuilderState<T>();
 }
 
-class _SliverPaginatedItemsBuilderState<T>
-    extends State<SliverPaginatedItemsBuilder<T>> {
-  bool _initialLoading = true;
-  bool _loadingMoreData = false;
+class _SliverPaginatedItemsBuilderState<T> extends State<SliverPaginatedItemsBuilder<T>> with RestorationMixin {
+  final RestorableBool _initialLoading = RestorableBool(true);
+  final RestorableBool _loadingMoreData = RestorableBool(false);
 
   final _loaderKey = UniqueKey();
 
-  late bool showLoader;
+  final RestorableBool showLoader = RestorableBool(false);
   late ScrollPhysics? scrollPhysics;
-  late int itemCount;
+  final RestorableInt itemCount = RestorableInt(0);
   late T? mockItem;
 
   Future<void> fetchData({bool reset = false}) async {
     if (!mounted) return;
-    if (!reset &&
-        (widget.response != null &&
-            !widget.response!.hasMoreData &&
-            !_loadingMoreData)) return;
+    if (!reset && (widget.response != null && !widget.response!.hasMoreData && !_loadingMoreData.value)) return;
     setState(() {
-      if (_initialLoading) {
-        _initialLoading = false;
+      if (_initialLoading.value) {
+        _initialLoading.value = false;
       } else if (reset) {
-        _initialLoading = true;
+        _initialLoading.value = true;
       } else {
-        _loadingMoreData = true;
+        _loadingMoreData.value = true;
       }
     });
 
@@ -137,8 +135,8 @@ class _SliverPaginatedItemsBuilderState<T>
       await widget.fetchPageData(reset);
     } catch (_) {}
 
-    if (_initialLoading) _initialLoading = false;
-    if (_loadingMoreData) _loadingMoreData = false;
+    if (_initialLoading.value) _initialLoading.value = false;
+    if (_loadingMoreData.value) _loadingMoreData.value = false;
     try {
       setState(() {});
     } catch (_) {}
@@ -209,20 +207,15 @@ class _SliverPaginatedItemsBuilderState<T>
 
   @override
   Widget build(BuildContext context) {
-    showLoader = (widget.paginate && (widget.response?.hasMoreData ?? false));
+    showLoader.value = (widget.paginate && (widget.response?.hasMoreData ?? false));
 
     (() {
-      final itemsLen =
-          (widget.response?.items?.length ?? widget.loaderItemsCount) +
-              (showLoader ? 1 : 0);
-      itemCount = widget.maxLength == null
-          ? itemsLen
-          : min(itemsLen, widget.maxLength!);
+      final itemsLen = (widget.response?.items?.length ?? widget.loaderItemsCount) + (showLoader.value ? 1 : 0);
+      itemCount.value = widget.maxLength == null ? itemsLen : min(itemsLen, widget.maxLength!);
     })();
 
     if (widget.response?.items?.isEmpty ?? false) {
-      return SliverFillRemaining(
-          hasScrollBody: false, child: _emptyWidget(widget.emptyText));
+      return SliverFillRemaining(hasScrollBody: false, child: _emptyWidget(widget.emptyText));
     } else if (widget.response?.items == null && mockItem == null) {
       return SliverFillRemaining(hasScrollBody: false, child: _loaderBuilder());
     } else {
@@ -230,9 +223,7 @@ class _SliverPaginatedItemsBuilderState<T>
     }
   }
 
-  Widget _buildItems() => widget.itemsDisplayType == ItemsDisplayType.list
-      ? _buildListView()
-      : _buildGridView();
+  Widget _buildItems() => widget.itemsDisplayType == ItemsDisplayType.list ? _buildListView() : _buildGridView();
 
   static int _computeActualChildCount(int itemCount) {
     return max(0, itemCount * 2 - 1);
@@ -254,7 +245,7 @@ class _SliverPaginatedItemsBuilderState<T>
         }
         return widgetItem;
       },
-      childCount: _computeActualChildCount(itemCount),
+      childCount: _computeActualChildCount(itemCount.value),
       semanticIndexCallback: (Widget _, int index) {
         return index.isEven ? index ~/ 2 : null;
       },
@@ -266,7 +257,7 @@ class _SliverPaginatedItemsBuilderState<T>
     return SliverGrid(
       delegate: SliverChildBuilderDelegate(
         _itemBuilder,
-        childCount: itemCount,
+        childCount: itemCount.value,
       ),
       gridDelegate: widget.gridDelegate ??
           SliverGridDelegateWithFixedCrossAxisCount(
@@ -276,5 +267,16 @@ class _SliverPaginatedItemsBuilderState<T>
             crossAxisSpacing: widget.gridCrossAxisSpacing ?? 15,
           ),
     );
+  }
+
+  @override
+  String? get restorationId => widget.restorationId;
+
+  @override
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
+    registerForRestoration(_initialLoading, '$restorationId._initialLoading');
+    registerForRestoration(_loadingMoreData, '$restorationId._loadingMoreData');
+    registerForRestoration(showLoader, '$restorationId.showLoader');
+    registerForRestoration(itemCount, '$restorationId.itemCount');
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:startate/startate.dart';
 
 import '../pagination/models/paginated_items_response.dart';
 import '../widgets/select_list_paginate.dart';
@@ -18,25 +18,19 @@ class TFSListMultiSelectController<T> {
     selectEntries.addAll(value ?? {});
   }
 
-  final Future<void> Function({bool reset, bool showLoaderOnReset})
-      fetchPageData;
+  final Future<void> Function({bool reset, bool showLoaderOnReset}) fetchPageData;
 
   final Rx<TextEditingController> _itemController = TextEditingController().obs;
   TextEditingController get itemController => _itemController.value;
-  set itemController(TextEditingController value) =>
-      _itemController.value = value;
+  set itemController(TextEditingController value) => _itemController.value = value;
 
-  final RxMap<String, TFSListItem<T>> _initialMap =
-      <String, TFSListItem<T>>{}.obs;
+  final RxMap<String, TFSListItem<T>> _initialMap = <String, TFSListItem<T>>{}.obs;
   Map<String, TFSListItem<T>> get initialMap => _initialMap;
-  set initialMap(Map<String, TFSListItem<T>> value) =>
-      _initialMap.assignAll(value);
+  set initialMap(Map<String, TFSListItem<T>> value) => _initialMap.assignAll(value);
 
-  final RxMap<String, TFSListItem<T>> _selectEntries =
-      <String, TFSListItem<T>>{}.obs;
+  final RxMap<String, TFSListItem<T>> _selectEntries = <String, TFSListItem<T>>{}.obs;
   Map<String, TFSListItem<T>> get selectEntries => _selectEntries;
-  set selectEntries(Map<String, TFSListItem<T>> value) =>
-      _selectEntries.assignAll(value);
+  set selectEntries(Map<String, TFSListItem<T>> value) => _selectEntries.assignAll(value);
 
   final Rxn<PaginatedItemsResponse<MapEntry<String, TFSListItem<T>>>> response;
 
@@ -92,39 +86,36 @@ class TFSListMultiSelectController<T> {
     Navigator.push<dynamic>(
         context,
         MaterialPageRoute<dynamic>(
-            builder: (context) =>
-                SelectListPaginate<MapEntry<String, TFSListItem<T>>>(
-                    onRefresh: () async =>
-                        fetchPageData(reset: true, showLoaderOnReset: true),
-                    fetchPageData: (reset) =>
-                        fetchPageData(reset: reset, showLoaderOnReset: reset),
-                    response: response,
-                    onItemTap: () {},
-                    title: 'Selecione um ou mais itens',
-                    floatingActionButton: FloatingActionButton.extended(
-                      label: const Text('Salvar'),
-                      icon: const Icon(Icons.save),
-                      onPressed: () {
-                        Navigator.of(context).pop(selectEntries);
+            builder: (context) => SelectListPaginate<MapEntry<String, TFSListItem<T>>>(
+                onRefresh: () async => fetchPageData(reset: true, showLoaderOnReset: true),
+                fetchPageData: (reset) => fetchPageData(reset: reset, showLoaderOnReset: reset),
+                response: response,
+                onItemTap: () {},
+                title: 'Selecione um ou mais itens',
+                floatingActionButton: FloatingActionButton.extended(
+                  label: const Text('Salvar'),
+                  icon: const Icon(Icons.save),
+                  onPressed: () {
+                    Navigator.of(context).pop(selectEntries);
+                  },
+                ),
+                itemBuilder: (context, index, item) {
+                  return Obx(
+                    () => ListTile(
+                      leading: isSelected(item) ? checkIcon : uncheckIcon,
+                      title: Text(
+                        item.value.label,
+                        style: titleTextStyle,
+                      ),
+                      onTap: () {
+                        if (isSelected(item)) {
+                          deselectItem(item);
+                        } else {
+                          selectItem(item);
+                        }
                       },
                     ),
-                    itemBuilder: (context, index, item) {
-                      return Obx(
-                        () => ListTile(
-                          leading: isSelected(item) ? checkIcon : uncheckIcon,
-                          title: Text(
-                            item.value.label,
-                            style: titleTextStyle,
-                          ),
-                          onTap: () {
-                            if (isSelected(item)) {
-                              deselectItem(item);
-                            } else {
-                              selectItem(item);
-                            }
-                          },
-                        ),
-                      );
-                    })));
+                  );
+                })));
   }
 }

@@ -14,6 +14,7 @@ import '../exceptions/payment_refused_exception.dart';
 import '../exceptions/permission_exception.dart';
 import '../exceptions/register_must_verify_email_exception.dart';
 import '../exceptions/server_error_exception.dart';
+import '../exceptions/ui_exception.dart';
 import '../exceptions/validation_exception.dart';
 import '../widgets/error_dialog.dart';
 
@@ -213,12 +214,49 @@ void displayErrorDialog(BuildContext context,
               onRetry: onRetry),
           barrierDismissible: false,
         ).whenComplete(() => onError);
+      } else if (error.response?.statusCode == 401) {
+        showDialog<void>(
+          context: context,
+          builder: (context) => ErrorDialog(
+              errorMessage: 'É necessário fazer login, reinicie o app\n'
+                  'Em caso de dúvidas, entre em contato com o suporte',
+              onRetry: onRetry),
+          barrierDismissible: false,
+        ).whenComplete(() => onError);
+      } else if (error.response?.statusCode == 403) {
+        showDialog<void>(
+          context: context,
+          builder: (context) => ErrorDialog(
+              errorMessage: 'Acesso Negado\n'
+                  'Em caso de dúvidas, entre em contato com o suporte',
+              onRetry: onRetry),
+          barrierDismissible: false,
+        ).whenComplete(() => onError);
+      } else if (error.response?.statusCode == 404) {
+        showDialog<void>(
+          context: context,
+          builder: (context) => ErrorDialog(
+              errorMessage: 'Recurso não encontrado\n'
+                  'Em caso de dúvidas, entre em contato com o suporte',
+              onRetry: onRetry),
+          barrierDismissible: false,
+        ).whenComplete(() => onError);
       } else if (error.response?.statusCode == 429) {
         showDialog<void>(
           context: context,
           builder: (context) => ErrorDialog(
               errorMessage: 'Você fez várias requisições em um curto periodo de tempo\n'
                   'Muitas tentativas de conexão, tente mais tarde\n',
+              onRetry: onRetry),
+          barrierDismissible: false,
+        ).whenComplete(() => onError);
+      } else if (error.response?.statusCode == 503) {
+        showDialog<void>(
+          context: context,
+          builder: (context) => ErrorDialog(
+              errorMessage: 'Sistema em manutenção\n'
+                  'Por favor tente mais tarde\n'
+                  'Em caso de dúvidas, entre em contato com o suporte',
               onRetry: onRetry),
           barrierDismissible: false,
         ).whenComplete(() => onError);
@@ -254,6 +292,8 @@ void displayErrorDialog(BuildContext context,
           onRetry: onRetry),
       barrierDismissible: false,
     ).whenComplete(() => onError);
+  } else if (error is UiException) {
+    error.callDialog(context, onRetry: onRetry, onSuccess: onSuccess).whenComplete(() => onError);
   } else {
     showDialog<void>(
       context: context,

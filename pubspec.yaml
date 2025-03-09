@@ -1,11 +1,12 @@
 name: tfs_utils
 description: Some utilities for my apps
-version: 4.1.0
+version: 5.0.0
 homepage: "https://tfs.dev.br"
+publish_to: none
 
 environment:
   sdk: '>=3.4.0 <4.0.0'
-  flutter: ">=3.22.0"
+  flutter: ">=3.27.0"
 
 dependencies:
   flutter:
@@ -14,7 +15,11 @@ dependencies:
   dropdown_search: ">=5.0.3"
   cross_file: ">=0.3.3+1"
   file_picker: ">=5.0.1"
-  get: ">=4.3.6"
+  startate:
+    git:
+      url: https://github.com/TFSThiagoBR98/startate.git
+      tag: ^5.0.0
+
   hive: ">=2.0.4"
   hive_flutter: ">=1.1.0"
   visibility_detector: ">=0.3.3"
@@ -30,6 +35,10 @@ dependencies:
   intl: ">=0.17.0"
   dio: ">=4.0.6"
   crypto: ">=3.0.1"
+  auto_route: ">=10.0.1"
+  internet_connection_checker_plus: ">=2.5.2"
+  connectivity_plus: ">=6.0.5"
+  network_info_plus: ">=6.0.1"
 
 dev_dependencies:
   dependency_validator: ">=3.0.0"

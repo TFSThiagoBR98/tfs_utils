@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:startate/startate.dart';
 
 class TFSTextController<V> {
   final RxnString dataRx = RxnString();

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart' hide Builder;
-import 'package:get/get.dart';
+import 'package:startate/startate.dart';
 import 'package:intl/intl.dart';
 
 enum TFSDateTimeControllerDisplayFormat { date, time, datetime }
