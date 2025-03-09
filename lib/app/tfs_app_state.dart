@@ -13,7 +13,7 @@ abstract class TFSAppState extends TFSState {
   @override
   void init() {
     themeBrightness = _themeBrightnessSetting;
-    _themeBrightness.listen((value) {
+    _themeBrightness.value.listen((value) {
       _themeBrightnessSetting = value;
     });
   }
@@ -30,9 +30,9 @@ abstract class TFSAppState extends TFSState {
     settings.put('themeBrightness', value.name);
   }
 
-  final Rx<Brightness> _themeBrightness = Brightness.light.obs;
-  Brightness get themeBrightness => _themeBrightness.value;
-  set themeBrightness(Brightness value) => _themeBrightness.value = value;
+  final RestorableRx<Brightness> _themeBrightness = Brightness.light.robs;
+  Brightness get themeBrightness => _themeBrightness.value.value;
+  set themeBrightness(Brightness value) => _themeBrightness.value.value = value;
 
   @override
   void dispose() {
