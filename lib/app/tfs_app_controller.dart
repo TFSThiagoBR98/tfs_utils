@@ -13,7 +13,7 @@ abstract class TFSAppController<S extends TFSAppState> extends TFSBaseController
         await callback(state.appRouter.navigatorKey.currentContext!);
         return false;
       } else {
-        Future<void>.delayed(Duration(seconds: 1));
+        await Future<void>.delayed(Duration(seconds: 1));
         return true;
       }
     });
