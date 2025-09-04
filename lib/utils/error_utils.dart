@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:ferry/typed_links.dart';
 import 'package:flutter/material.dart';
-import 'package:ndialog/ndialog.dart';
 import 'package:universal_io/io.dart';
 
 import '../exceptions/account_deletation_in_progress.dart';
@@ -16,6 +15,7 @@ import '../exceptions/register_must_verify_email_exception.dart';
 import '../exceptions/server_error_exception.dart';
 import '../exceptions/ui_exception.dart';
 import '../exceptions/validation_exception.dart';
+import '../ndialog/progress_dialog.dart';
 import '../widgets/error_dialog.dart';
 
 Future<T> runFutureWithErrorDialog<T>(BuildContext context,
