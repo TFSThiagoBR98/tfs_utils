@@ -1,6 +1,6 @@
 name: tfs_utils
 description: Some utilities for my apps
-version: 5.2.0
+version: 5.2.1
 homepage: "https://tfs.dev.br"
 publish_to: none
 
@@ -18,7 +18,7 @@ dependencies:
   startate:
     git:
       url: https://github.com/TFSThiagoBR98/startate.git
-      ref: 5.1.0
+      ref: 5.1.1
 
   hive: ">=2.0.4"
   hive_flutter: ">=1.1.0"
