@@ -2,7 +2,8 @@
 // Copyright (c) 2019 Mochamad Nizwar Syafuan
 
 import 'package:flutter/material.dart';
-import 'package:ndialog/ndialog.dart';
+
+import 'utils.dart';
 
 abstract class _ProgressDialog {
   ///You can set title of dialog using this function,

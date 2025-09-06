@@ -25,7 +25,6 @@ dependencies:
   visibility_detector: ">=0.3.3"
   logging: ">=1.0.2"
   universal_io: ">=2.0.4"
-  ndialog: ">=4.1.0"
   decimal: ">=2.1.0"
   ferry: ">=0.11.0"
   gql_dio_link: ">=0.2.3"
