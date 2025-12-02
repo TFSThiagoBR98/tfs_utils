@@ -29,7 +29,6 @@ class ServerErrorException implements UiException {
         context: context,
         builder: (context) => ErrorDialog(
           errorMessage: 'Falha no servidor\n'
-              'Ocorreu um problema no nosso sistema\n'
               'Aguarde alguns minutos e tente novamente\n'
               'Caso o problema persista entre em contato com o suporte.\n',
           onRetry: onRetry,

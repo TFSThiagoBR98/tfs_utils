@@ -23,7 +23,7 @@ dependencies:
   hive: ">=2.0.4"
   hive_flutter: ">=1.1.0"
   visibility_detector: ">=0.3.3"
-  logging: ">=1.0.2"
+  any_logger: ">=1.1.3"
   universal_io: ">=2.0.4"
   decimal: ">=2.1.0"
   ferry: ">=0.11.0"

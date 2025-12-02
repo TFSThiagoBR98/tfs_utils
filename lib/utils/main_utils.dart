@@ -1,20 +1,43 @@
 import 'dart:async';
 
+import 'package:any_logger/any_logger.dart';
 import 'package:decimal/decimal.dart';
 import 'package:decimal/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:logging/logging.dart';
+import 'package:logging/logging.dart' as logging;
 
 Future<void> initFlutterApp() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   await Hive.openBox<dynamic>('settings');
-  Logger.root.level = Level.ALL;
-  Logger.root.onRecord.listen((record) {
-    debugPrint('${record.level.name}: ${record.time}: ${record.message}');
+  logging.Logger.root.level = logging.Level.ALL;
+  logging.Logger.root.onRecord.listen((record) {
+    Level level;
+    switch (record.level) {
+      case logging.Level.SHOUT:
+        level = Level.FATAL;
+        break;
+      case logging.Level.SEVERE:
+        level = Level.ERROR;
+        break;
+      case logging.Level.WARNING:
+        level = Level.WARN;
+        break;
+      case logging.Level.CONFIG:
+      case logging.Level.INFO:
+      case logging.Level.FINE:
+        level = Level.INFO;
+        break;
+      case logging.Level.FINER:
+        level = Level.DEBUG;
+        break;
+      default:
+        level = Level.TRACE;
+    }
+    LoggerFactory.getRootLogger().log(level, record.message, null, record.error, record.stackTrace);
   });
 }
 
