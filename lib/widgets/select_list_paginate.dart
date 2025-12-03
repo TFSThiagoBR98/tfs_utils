@@ -59,7 +59,6 @@ class _SelectListPaginateState<T> extends State<SelectListPaginate<T>> {
                 gridCrossAxisSpacing: widget.gridCrossAxisSpacing ?? 15,
                 fetchPageData: widget.fetchPageData,
                 loaderItemsCount: 10,
-                restorationId: null,
                 emptyText: 'Não há o que selecionar.\nCadastre novo item para continuar.',
                 response: widget.response.value,
                 itemBuilder: (context, index, item) => GestureDetector(
