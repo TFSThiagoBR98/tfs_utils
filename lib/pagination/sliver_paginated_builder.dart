@@ -33,7 +33,6 @@ class SliverPaginatedItemsBuilder<T> extends StatefulWidget {
     this.gridCrossAxisSpacing,
     this.gridChildAspectRatio,
     this.gridDelegate,
-    this.restorationId,
   }) : config = config ?? PaginatedItemsBuilderConfig.defaultConfig();
 
   /// This is the controller function that should handle fetching the list
@@ -101,33 +100,31 @@ class SliverPaginatedItemsBuilder<T> extends StatefulWidget {
   /// implicitly.
   final SliverGridDelegate? gridDelegate;
 
-  final String? restorationId;
-
   @override
   State<SliverPaginatedItemsBuilder<T>> createState() => _SliverPaginatedItemsBuilderState<T>();
 }
 
 class _SliverPaginatedItemsBuilderState<T> extends State<SliverPaginatedItemsBuilder<T>> {
-  final RestorableBool _initialLoading = RestorableBool(true);
-  final RestorableBool _loadingMoreData = RestorableBool(false);
+  bool _initialLoading = true;
+  bool _loadingMoreData = false;
 
   final _loaderKey = UniqueKey();
 
-  final RestorableBool showLoader = RestorableBool(false);
+  late bool showLoader;
   late ScrollPhysics? scrollPhysics;
-  final RestorableInt itemCount = RestorableInt(0);
+  late int itemCount;
   late T? mockItem;
 
   Future<void> fetchData({bool reset = false}) async {
     if (!mounted) return;
-    if (!reset && (widget.response != null && !widget.response!.hasMoreData && !_loadingMoreData.value)) return;
+    if (!reset && (widget.response != null && !widget.response!.hasMoreData && !_loadingMoreData)) return;
     setState(() {
-      if (_initialLoading.value) {
-        _initialLoading.value = false;
+      if (_initialLoading) {
+        _initialLoading = false;
       } else if (reset) {
-        _initialLoading.value = true;
+        _initialLoading = true;
       } else {
-        _loadingMoreData.value = true;
+        _loadingMoreData = true;
       }
     });
 
@@ -135,8 +132,8 @@ class _SliverPaginatedItemsBuilderState<T> extends State<SliverPaginatedItemsBui
       await widget.fetchPageData(reset);
     } catch (_) {}
 
-    if (_initialLoading.value) _initialLoading.value = false;
-    if (_loadingMoreData.value) _loadingMoreData.value = false;
+    if (_initialLoading) _initialLoading = false;
+    if (_loadingMoreData) _loadingMoreData = false;
     try {
       setState(() {});
     } catch (_) {}
@@ -207,11 +204,11 @@ class _SliverPaginatedItemsBuilderState<T> extends State<SliverPaginatedItemsBui
 
   @override
   Widget build(BuildContext context) {
-    showLoader.value = (widget.paginate && (widget.response?.hasMoreData ?? false));
+    showLoader = (widget.paginate && (widget.response?.hasMoreData ?? false));
 
     (() {
-      final itemsLen = (widget.response?.items?.length ?? widget.loaderItemsCount) + (showLoader.value ? 1 : 0);
-      itemCount.value = widget.maxLength == null ? itemsLen : min(itemsLen, widget.maxLength!);
+      final itemsLen = (widget.response?.items?.length ?? widget.loaderItemsCount) + (showLoader ? 1 : 0);
+      itemCount = widget.maxLength == null ? itemsLen : min(itemsLen, widget.maxLength!);
     })();
 
     if (widget.response?.items?.isEmpty ?? false) {
@@ -245,7 +242,7 @@ class _SliverPaginatedItemsBuilderState<T> extends State<SliverPaginatedItemsBui
         }
         return widgetItem;
       },
-      childCount: _computeActualChildCount(itemCount.value),
+      childCount: _computeActualChildCount(itemCount),
       semanticIndexCallback: (Widget _, int index) {
         return index.isEven ? index ~/ 2 : null;
       },
@@ -257,7 +254,7 @@ class _SliverPaginatedItemsBuilderState<T> extends State<SliverPaginatedItemsBui
     return SliverGrid(
       delegate: SliverChildBuilderDelegate(
         _itemBuilder,
-        childCount: itemCount.value,
+        childCount: itemCount,
       ),
       gridDelegate: widget.gridDelegate ??
           SliverGridDelegateWithFixedCrossAxisCount(

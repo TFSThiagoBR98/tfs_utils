@@ -50,7 +50,6 @@ class PaginatedItemsBuilder<T> extends StatefulWidget {
     this.scrollDirection = Axis.vertical,
     this.scrollPhysics,
     bool? scrollPrimary,
-    this.restorationId,
   }) : scrollPrimary = scrollPrimary ?? scrollController == null && identical(scrollDirection, Axis.vertical);
 
   /// This is the controller function that should handle fetching the list
@@ -220,8 +219,6 @@ class PaginatedItemsBuilder<T> extends StatefulWidget {
   final double? gridCrossAxisSpacing;
   final double? gridChildAspectRatio;
 
-  final String? restorationId;
-
   /// A delegate that controls the layout of the children within the [GridView].
   ///
   /// The [GridView], [GridView.builder], and [GridView.custom] constructors let you specify this
@@ -236,27 +233,27 @@ class PaginatedItemsBuilder<T> extends StatefulWidget {
 class _PaginatedItemsBuilderState<T> extends State<PaginatedItemsBuilder<T>> {
   ScrollController? _scrollController;
 
-  final RestorableBool _initialLoading = RestorableBool(true);
-  final RestorableBool _loadingMoreData = RestorableBool(false);
+  bool _initialLoading = true;
+  bool _loadingMoreData = false;
 
   final _loaderKey = UniqueKey();
 
-  final RestorableBool showLoader = RestorableBool(false);
+  late bool showLoader;
   late ScrollController? itemsScrollController;
   late ScrollPhysics? scrollPhysics;
-  final RestorableInt itemCount = RestorableInt(0);
+  late int itemCount;
   late T? mockItem;
 
   Future<void> fetchData({bool reset = false}) async {
     if (!mounted) return;
-    if (!reset && (widget.response != null && !widget.response!.hasMoreData && !_loadingMoreData.value)) return;
+    if (!reset && (widget.response != null && !widget.response!.hasMoreData && !_loadingMoreData)) return;
     setState(() {
-      if (_initialLoading.value) {
-        _initialLoading.value = false;
+      if (_initialLoading) {
+        _initialLoading = false;
       } else if (reset) {
-        _initialLoading.value = true;
+        _initialLoading = true;
       } else {
-        _loadingMoreData.value = true;
+        _loadingMoreData = true;
       }
     });
 
@@ -264,8 +261,8 @@ class _PaginatedItemsBuilderState<T> extends State<PaginatedItemsBuilder<T>> {
       await widget.fetchPageData(reset);
     } catch (_) {}
 
-    if (_initialLoading.value) _initialLoading.value = false;
-    if (_loadingMoreData.value) _loadingMoreData.value = false;
+    if (_initialLoading) _initialLoading = false;
+    if (_loadingMoreData) _loadingMoreData = false;
     try {
       setState(() {});
     } catch (_) {}
@@ -350,13 +347,12 @@ class _PaginatedItemsBuilderState<T> extends State<PaginatedItemsBuilder<T>> {
   @override
   void dispose() {
     if (widget.scrollController == null) _scrollController?.dispose();
-
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    showLoader.value = (widget.paginate && (widget.response?.hasMoreData ?? false));
+    showLoader = (widget.paginate && (widget.response?.hasMoreData ?? false));
     itemsScrollController = widget.scrollController == null ? _scrollController : null;
     scrollPhysics = widget.scrollPhysics ??
         (widget.scrollPrimary == true ||
@@ -371,8 +367,8 @@ class _PaginatedItemsBuilderState<T> extends State<PaginatedItemsBuilder<T>> {
     }
 
     (() {
-      final itemsLen = (widget.response?.items?.length ?? widget.loaderItemsCount) + (showLoader.value ? 1 : 0);
-      itemCount.value = widget.maxLength == null ? itemsLen : min(itemsLen, widget.maxLength!);
+      final itemsLen = (widget.response?.items?.length ?? widget.loaderItemsCount) + (showLoader ? 1 : 0);
+      itemCount = widget.maxLength == null ? itemsLen : min(itemsLen, widget.maxLength!);
     })();
 
     if (widget.response?.items?.isEmpty ?? false) {
@@ -402,14 +398,13 @@ class _PaginatedItemsBuilderState<T> extends State<PaginatedItemsBuilder<T>> {
       scrollDirection: widget.scrollDirection,
       itemBuilder: _itemBuilder,
       padding: widget.padding,
-      restorationId: null,
       separatorBuilder: (_, __) =>
           widget.separatorWidget ??
           SizedBox(
             width: widget.listItemsGap,
             height: widget.listItemsGap,
           ),
-      itemCount: itemCount.value,
+      itemCount: itemCount,
     );
   }
 
@@ -421,7 +416,6 @@ class _PaginatedItemsBuilderState<T> extends State<PaginatedItemsBuilder<T>> {
       reverse: widget.reverse,
       scrollDirection: widget.scrollDirection,
       itemBuilder: _itemBuilder,
-      restorationId: null,
       gridDelegate: widget.gridDelegate ??
           SliverGridDelegateWithFixedCrossAxisCount(
             childAspectRatio: widget.gridChildAspectRatio ?? 1,
@@ -430,7 +424,7 @@ class _PaginatedItemsBuilderState<T> extends State<PaginatedItemsBuilder<T>> {
             crossAxisSpacing: widget.gridCrossAxisSpacing ?? 15,
           ),
       padding: widget.padding,
-      itemCount: itemCount.value,
+      itemCount: itemCount,
     );
   }
 }
