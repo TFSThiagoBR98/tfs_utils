@@ -6,7 +6,6 @@ import 'package:visibility_detector/visibility_detector.dart';
 
 import 'models/paginated_items_builder_config.dart';
 import 'models/paginated_items_response.dart';
-import 'pagination_items_state_handler.dart';
 
 /// enum used to check how the list items are to be rendered on the screen.
 /// Whether in a list view or a grid view.
