@@ -256,7 +256,6 @@ class _ProgressDialogWidget extends StatefulWidget {
   final _ProgressDialogWidgetState _dialogWidgetState = _ProgressDialogWidgetState();
 
   _ProgressDialogWidget({
-    super.key,
     required this.dialogStyle,
     this.title,
     this.message,

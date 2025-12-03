@@ -40,7 +40,7 @@ class SelectListPaginate<T> extends StatefulWidget {
   State<SelectListPaginate<T>> createState() => _SelectListPaginateState<T>();
 }
 
-class _SelectListPaginateState<T> extends State<SelectListPaginate<T>> with RestorationMixin {
+class _SelectListPaginateState<T> extends State<SelectListPaginate<T>> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,34 +51,27 @@ class _SelectListPaginateState<T> extends State<SelectListPaginate<T>> with Rest
       floatingActionButton: widget.floatingActionButton,
       body: RefreshIndicator(
         onRefresh: widget.onRefresh,
-        child:
-            Obx(() => CustomScrollView(restorationId: restorationId != null ? '$restorationId.scroll' : null, slivers: [
-                  SliverPaginatedItemsBuilder<T>(
-                    gridChildAspectRatio: widget.gridChildAspectRatio ?? 1,
-                    gridCrossAxisCount: widget.gridCrossAxisCount ?? 2,
-                    gridMainAxisSpacing: widget.gridMainAxisSpacing ?? 15,
-                    gridCrossAxisSpacing: widget.gridCrossAxisSpacing ?? 15,
-                    fetchPageData: widget.fetchPageData,
-                    loaderItemsCount: 10,
-                    restorationId: restorationId != null ? '$restorationId.paginator' : null,
-                    emptyText: 'Não há o que selecionar.\nCadastre novo item para continuar.',
-                    response: widget.response.value,
-                    itemBuilder: (context, index, item) => GestureDetector(
-                      onTap: widget.onItemTap ??
-                          () {
-                            Navigator.pop(context, item);
-                          },
-                      child: widget.itemBuilder(context, index, item),
-                    ),
-                  )
-                ])),
+        child: Obx(() => CustomScrollView(restorationId: null, slivers: [
+              SliverPaginatedItemsBuilder<T>(
+                gridChildAspectRatio: widget.gridChildAspectRatio ?? 1,
+                gridCrossAxisCount: widget.gridCrossAxisCount ?? 2,
+                gridMainAxisSpacing: widget.gridMainAxisSpacing ?? 15,
+                gridCrossAxisSpacing: widget.gridCrossAxisSpacing ?? 15,
+                fetchPageData: widget.fetchPageData,
+                loaderItemsCount: 10,
+                restorationId: null,
+                emptyText: 'Não há o que selecionar.\nCadastre novo item para continuar.',
+                response: widget.response.value,
+                itemBuilder: (context, index, item) => GestureDetector(
+                  onTap: widget.onItemTap ??
+                      () {
+                        Navigator.pop(context, item);
+                      },
+                  child: widget.itemBuilder(context, index, item),
+                ),
+              )
+            ])),
       ),
     );
   }
-
-  @override
-  String? get restorationId => widget.restorationId;
-
-  @override
-  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {}
 }

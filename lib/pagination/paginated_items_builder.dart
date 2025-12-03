@@ -6,6 +6,7 @@ import 'package:visibility_detector/visibility_detector.dart';
 
 import 'models/paginated_items_builder_config.dart';
 import 'models/paginated_items_response.dart';
+import 'pagination_items_state_handler.dart';
 
 /// enum used to check how the list items are to be rendered on the screen.
 /// Whether in a list view or a grid view.
@@ -233,7 +234,7 @@ class PaginatedItemsBuilder<T> extends StatefulWidget {
   State<PaginatedItemsBuilder<T>> createState() => _PaginatedItemsBuilderState<T>();
 }
 
-class _PaginatedItemsBuilderState<T> extends State<PaginatedItemsBuilder<T>> with RestorationMixin {
+class _PaginatedItemsBuilderState<T> extends State<PaginatedItemsBuilder<T>> {
   ScrollController? _scrollController;
 
   final RestorableBool _initialLoading = RestorableBool(true);
@@ -402,7 +403,7 @@ class _PaginatedItemsBuilderState<T> extends State<PaginatedItemsBuilder<T>> wit
       scrollDirection: widget.scrollDirection,
       itemBuilder: _itemBuilder,
       padding: widget.padding,
-      restorationId: restorationId != null ? '$restorationId.list' : null,
+      restorationId: null,
       separatorBuilder: (_, __) =>
           widget.separatorWidget ??
           SizedBox(
@@ -421,7 +422,7 @@ class _PaginatedItemsBuilderState<T> extends State<PaginatedItemsBuilder<T>> wit
       reverse: widget.reverse,
       scrollDirection: widget.scrollDirection,
       itemBuilder: _itemBuilder,
-      restorationId: restorationId != null ? '$restorationId.grid' : null,
+      restorationId: null,
       gridDelegate: widget.gridDelegate ??
           SliverGridDelegateWithFixedCrossAxisCount(
             childAspectRatio: widget.gridChildAspectRatio ?? 1,
@@ -432,16 +433,5 @@ class _PaginatedItemsBuilderState<T> extends State<PaginatedItemsBuilder<T>> wit
       padding: widget.padding,
       itemCount: itemCount.value,
     );
-  }
-
-  @override
-  String? get restorationId => widget.restorationId;
-
-  @override
-  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
-    registerForRestoration(_initialLoading, '$restorationId._initialLoading');
-    registerForRestoration(_loadingMoreData, '$restorationId._loadingMoreData');
-    registerForRestoration(showLoader, '$restorationId.showLoader');
-    registerForRestoration(itemCount, '$restorationId.itemCount');
   }
 }

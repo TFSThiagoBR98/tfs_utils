@@ -39,3 +39,6 @@ linter:
     - only_throw_errors
     - prefer_final_in_for_each
     - prefer_single_quotes
+
+formatter:
+  page_width: 120

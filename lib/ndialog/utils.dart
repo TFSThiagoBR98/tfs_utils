@@ -44,7 +44,7 @@ class DialogStyle {
   DialogStyle({
     this.titleDivider = false,
     this.borderRadius = const BorderRadius.all(Radius.circular(10)),
-    this.semanticsLabel = "",
+    this.semanticsLabel = '',
     this.titlePadding = const EdgeInsets.only(left: 15.0, right: 15.0, top: 10.0),
     this.contentPadding = const EdgeInsets.only(right: 15.0, left: 15.0, top: 0.0, bottom: 15.0),
     this.titleTextStyle,
@@ -157,7 +157,7 @@ class NAlertDialog extends DialogBackground {
   final Function? onDismiss;
 
   const NAlertDialog({
-    Key? key,
+    super.key,
     this.backgroundColor,
     this.dialogStyle,
     this.title,
@@ -166,7 +166,7 @@ class NAlertDialog extends DialogBackground {
     this.blur,
     this.dismissable,
     this.onDismiss,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -198,8 +198,7 @@ class DialogBackground extends StatelessWidget {
   /// The barrier color of the dialog.
   final Color? barrierColor;
 
-  const DialogBackground({Key? key, this.dialog, this.dismissable, this.blur, this.onDismiss, this.barrierColor})
-      : super(key: key);
+  const DialogBackground({super.key, this.dialog, this.dismissable, this.blur, this.onDismiss, this.barrierColor});
 
   /// Show the dialog directly.
   Route<T> show<T>(BuildContext context,
@@ -280,12 +279,12 @@ class NDialog extends StatelessWidget {
   final List<Widget>? actions;
 
   const NDialog({
-    Key? key,
+    super.key,
     this.dialogStyle,
     this.title,
     this.content,
     this.actions,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -39,6 +39,7 @@ dependencies:
   connectivity_plus: ">=6.0.5"
   network_info_plus: ">=6.0.1"
 
+  logging: any
 dev_dependencies:
   dependency_validator: ">=3.0.0"
   flutter_lints: ">=2.0.0"

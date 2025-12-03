@@ -7,6 +7,7 @@ import 'package:visibility_detector/visibility_detector.dart';
 import 'models/paginated_items_builder_config.dart';
 import 'models/paginated_items_response.dart';
 import 'paginated_items_builder.dart';
+import 'pagination_items_state_handler.dart';
 
 /// Handles rendering the items on the screen. Can have [PaginationItemsStateHandler]
 /// as parent if state is not handled externally.
@@ -107,7 +108,7 @@ class SliverPaginatedItemsBuilder<T> extends StatefulWidget {
   State<SliverPaginatedItemsBuilder<T>> createState() => _SliverPaginatedItemsBuilderState<T>();
 }
 
-class _SliverPaginatedItemsBuilderState<T> extends State<SliverPaginatedItemsBuilder<T>> with RestorationMixin {
+class _SliverPaginatedItemsBuilderState<T> extends State<SliverPaginatedItemsBuilder<T>> {
   final RestorableBool _initialLoading = RestorableBool(true);
   final RestorableBool _loadingMoreData = RestorableBool(false);
 
@@ -267,16 +268,5 @@ class _SliverPaginatedItemsBuilderState<T> extends State<SliverPaginatedItemsBui
             crossAxisSpacing: widget.gridCrossAxisSpacing ?? 15,
           ),
     );
-  }
-
-  @override
-  String? get restorationId => widget.restorationId;
-
-  @override
-  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
-    registerForRestoration(_initialLoading, '$restorationId._initialLoading');
-    registerForRestoration(_loadingMoreData, '$restorationId._loadingMoreData');
-    registerForRestoration(showLoader, '$restorationId.showLoader');
-    registerForRestoration(itemCount, '$restorationId.itemCount');
   }
 }

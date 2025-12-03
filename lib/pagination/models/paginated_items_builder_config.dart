@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../tfs_utils.dart';
+
+import '../paginated_items_builder.dart';
+
 /// The config for [PaginatedItemsBuilder].
 class PaginatedItemsBuilderConfig {
   PaginatedItemsBuilderConfig({

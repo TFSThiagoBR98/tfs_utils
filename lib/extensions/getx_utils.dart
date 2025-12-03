@@ -397,7 +397,7 @@ class GetUtils {
     // Calcular o primeiro dígito verificador
     var calcDv1 = 0;
     var j = 0;
-    for (var i in Iterable<int>.generate(12, (i) => i < 4 ? 5 - i : 13 - i)) {
+    for (final i in Iterable<int>.generate(12, (i) => i < 4 ? 5 - i : 13 - i)) {
       calcDv1 += digits[j++] * i;
     }
     calcDv1 %= 11;
@@ -411,7 +411,7 @@ class GetUtils {
     // Calcular o segundo dígito verificador
     var calcDv2 = 0;
     j = 0;
-    for (var i in Iterable<int>.generate(13, (i) => i < 5 ? 6 - i : 14 - i)) {
+    for (final i in Iterable<int>.generate(13, (i) => i < 5 ? 6 - i : 14 - i)) {
       calcDv2 += digits[j++] * i;
     }
     calcDv2 %= 11;
@@ -447,7 +447,7 @@ class GetUtils {
 
     // Calculate the first verifier digit
     var calcDv1 = 0;
-    for (var i in Iterable<int>.generate(9, (i) => 10 - i)) {
+    for (final i in Iterable<int>.generate(9, (i) => 10 - i)) {
       calcDv1 += digits[10 - i] * i;
     }
     calcDv1 %= 11;
@@ -461,7 +461,7 @@ class GetUtils {
 
     // Calculate the second verifier digit
     var calcDv2 = 0;
-    for (var i in Iterable<int>.generate(10, (i) => 11 - i)) {
+    for (final i in Iterable<int>.generate(10, (i) => 11 - i)) {
       calcDv2 += digits[11 - i] * i;
     }
     calcDv2 %= 11;

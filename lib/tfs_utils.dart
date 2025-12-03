@@ -1,4 +1,4 @@
-library tfs_utils;
+library;
 
 export 'app/app_scrollbehavior.dart';
 export 'app/json_utils.dart';
