@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 
 import '../media_mngr/media_file.dart';
 import 'base_provider.dart';
@@ -19,7 +19,8 @@ abstract class BaseServerProvider extends BaseProvider {
     ));
   }
 
-  Future<String> uploadFile<T>({required String model, required String id, required MediaFile<T> file, String? replace}) async {
+  Future<String> uploadFile<T>(
+      {required String model, required String id, required MediaFile<T> file, String? replace}) async {
     String fileName = file.file!.path.split('/').last;
     FormData formData = FormData.fromMap(<String, dynamic>{
       'model': model,

@@ -1,6 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:startate/get_rx/src/rx_types/rx_types.dart';
 
 import 'tfs_auto_binder_view.dart';
